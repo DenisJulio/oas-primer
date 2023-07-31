@@ -1,0 +1,71 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.2'
+	id 'io.spring.dependency-management' version '1.1.2'
+	id "org.openapi.generator" version "6.6.0"
+}
+
+group = 'com.denisjulio'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+jar {
+	enabled true
+}
+
+bootJar {
+	enabled false
+}
+
+springBoot {
+	mainClass = "com.denisjulio.oasprimer.OasPrimerApplication"
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+openApiGenerate {
+	inputSpec = "$rootDir/src/main/resources/api/openapi.yml"
+	generatorName = "spring"
+	library = "spring-boot"
+	apiPackage = "com.denisjulio.oasprimer.api"
+	modelPackage = "com.denisjulio.oasprimer.model"
+	configOptions.set([
+			interfaceOnly: "true",
+			performBeanValidation: "true",
+			dateLibrary: "java8",
+			useSpringBoot3: "true"
+	])
+}
+
+openApiValidate {
+	inputSpec = "$rootDir/src/main/resources/api/openapi.yml"
+}
+
+compileJava.dependsOn tasks.openApiGenerate
+sourceSets.main.java.srcDir "${openApiGenerate.outputDir.get()}/src/main/java"
+
+tasks.register("simple") {
+	doLast {
+		println("outputDir = ${openApiGenerate.outputDir.get()}")
+	}
+}

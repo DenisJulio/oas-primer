@@ -1,0 +1,226 @@
+openapi: '3.0.3'
+info: 
+  title: Personal Info API
+  version: '1.0.0'
+  description: |
+    A simple Personal data API.
+
+tags: 
+  - name: person
+
+paths: 
+  /persons:
+    get: 
+      tags: 
+        - person
+      description: Retrieve all available Persons for querying
+      operationId: getPersons
+      responses: 
+        200: 
+          description: Successfully retrieved all available Persons
+          content: 
+            application/json: 
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/person'
+    post:
+      tags: 
+        - person
+      description: Submits new personal information about a Person
+      operationId: postPerson
+      requestBody: 
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/person-submission-data'
+            examples:
+              person:
+                $ref: '#/components/examples/person-submission-data'
+      responses:
+        201:
+          description: Successfully created a new Person
+          content: 
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/person'
+              examples: 
+                person:
+                  $ref: '#/components/examples/full-person-data'
+        400:
+          $ref: '#/components/responses/bad-request'
+        422:
+          $ref: '#/components/responses/validation-error'
+  /persons/{id}:
+    get: 
+      tags: 
+        - person
+      description: |-
+        Retrieves information about a single Person given their "id"
+      operationId: getPersonById
+      security: 
+        - Basic: []
+      parameters: 
+        - $ref: '#/components/parameters/person-id'
+      responses: 
+        200:
+          description: Successfully retrieved the Person with the provided "id"
+          content:
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/person'
+        400:
+          $ref: '#/components/responses/bad-request'
+        404:
+          $ref: '#/components/responses/not-found'
+        422:
+          $ref: '#/components/responses/validation-error'
+    patch: 
+      tags:
+        - person
+      description: Updates a Person entity data
+      operationId: updatePersonById
+      security: 
+        - Basic: []
+      parameters: 
+        - $ref: '#/components/parameters/person-id'
+      requestBody: 
+        description: The fields to be updated with the new values
+        content: 
+          application/json: 
+            schema: 
+              $ref: '#/components/schemas/person-submission-data'
+      responses: 
+        200:
+          description: |-
+            Sucessfully updated the Person entity with the new data.
+          content: 
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/person'
+        400:
+          $ref: '#/components/responses/bad-request'
+        404:
+          $ref: '#/components/responses/not-found'
+        422:
+          $ref: '#/components/responses/validation-error'
+    delete: 
+      tags:
+        - person
+      description: Deletes a Person entity data
+      operationId: deletePersonById
+      security: 
+        - Basic: []
+      parameters: 
+        - $ref: '#/components/parameters/person-id'
+      responses: 
+        204:
+          description: |-
+            Successfully deleted the Person entity with the provided "id"
+        400:
+          $ref: '#/components/responses/bad-request'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        404:
+          $ref: '#/components/responses/not-found'
+
+components: 
+  schemas: 
+    person:
+      description: Representation of personal data
+      type: object
+      properties: 
+        id:
+          type: integer
+        first-name:
+          type: string
+        last-name:
+          type: string
+        birth-date:
+          type: string
+          format: date
+    person-submission-data:
+      type: object
+      description: Personal data required for submitting a new entity
+      properties: 
+        first-name:
+          type: string
+        last-name:
+          type: string
+        birth-date:
+          type: string
+          format: date
+    problem-detail:
+      description: Representation of problems and its explanation
+      type: object
+      properties: 
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+  examples: 
+    full-person-data:
+      value: 
+        id: 101
+        first-name: John
+        last-name: Doe
+        birth-date: '1970-01-31'
+    person-submission-data:
+      value:
+        first-name: John
+        last-name: Doe
+        birth-date: '1970-01-31'
+  parameters: 
+    person-id:
+      name: id
+      in: path
+      description: The "id" field of a Person entity
+      required: true
+      example: 17
+      schema:
+        type: integer
+  responses: 
+    bad-request:
+      description: Bad request
+      content: 
+        application/problem+json: 
+          schema: 
+            $ref: '#/components/schemas/problem-detail'
+    validation-error:
+      description: Validation error
+      content: 
+        application/problem+json: 
+          schema: 
+            allOf: 
+              - $ref: '#/components/schemas/problem-detail'
+            properties: 
+              errors:
+                type: array
+                items: 
+                  type: object
+                  properties: 
+                    field:
+                      type: string
+                    reason:
+                      type: string
+    unauthenticated:
+      description: Failed to authenticate the request
+      content: 
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/problem-detail'
+    not-found:
+      description: Resource not found
+      content: 
+        application/problem+json:
+          schema: 
+            $ref: '#/components/schemas/problem-detail'
+  securitySchemes: 
+    Basic:
+      type: http
+      scheme: basic
