@@ -29,7 +29,8 @@ paths:
         - person
       description: Submits new personal information about a Person
       operationId: postPerson
-      requestBody: 
+      requestBody:
+        required: true
         content: 
           application/json:
             schema:
@@ -93,7 +94,7 @@ paths:
       responses: 
         200:
           description: |-
-            Sucessfully updated the Person entity with the new data.
+            Successfully updated the Person entity with the new data.
           content: 
             application/json: 
               schema: 
@@ -150,6 +151,10 @@ components:
         birth-date:
           type: string
           format: date
+      required:
+        - first-name
+        - last-name
+        - birth-date
     problem-detail:
       description: Representation of problems and its explanation
       type: object

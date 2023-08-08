@@ -8,6 +8,8 @@
 
 * [OpenAPI Generator Gradle Plugin](https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-gradle-plugin)
 * [OpenAPI generator](https://github.com/OpenAPITools/openapi-generator)
+* [Spring Boot Docs](https://docs.spring.io/spring-boot/docs/3.1.2/reference/htmlsingle/)
+* [Spring Framework Docs](https://docs.spring.io/spring-framework/reference/index.html)
 
 ## Articles and Guides
 
